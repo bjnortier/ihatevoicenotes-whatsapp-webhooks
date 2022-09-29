@@ -31,7 +31,7 @@ app.get("/whatsapp", function (req, res) {
 
 app.post("/whatsapp", function (req, res) {
   inspect("WhatsApp request body:")
-  inspect(rqe.body)
+  inspect(req.body)
 
   if (!req.isXHubValid()) {
     console.log(
