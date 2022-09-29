@@ -2,6 +2,7 @@ var bodyParser = require("body-parser")
 var express = require("express")
 var app = express()
 var xhub = require("express-x-hub")
+var inspect = require("util").inspect
 
 app.set("port", process.env.PORT || 5000)
 app.listen(app.get("port"))
@@ -29,7 +30,8 @@ app.get("/whatsapp", function (req, res) {
 })
 
 app.post("/whatsapp", function (req, res) {
-  console.log("WhatsApp request body:", req.body)
+  inspect("WhatsApp request body:")
+  inspect(rqe.body)
 
   if (!req.isXHubValid()) {
     console.log(
