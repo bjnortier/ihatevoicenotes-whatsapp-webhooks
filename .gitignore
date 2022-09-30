@@ -1,12 +1,17 @@
 # Node build artifacts
 node_modules
 npm-debug.log
+dist/
 
 # Local development
-*.env
-*.dev
+.dev-env
 .DS_Store
 
 # Docker
 Dockerfile
 docker-compose.yml
+
+# Python
+__pycache__/
+
+
