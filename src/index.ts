@@ -7,13 +7,29 @@ import "crypto"
 import { createClient } from "redis"
 
 /**
+ * Required environment variables
+ */
+;["PORT", "TOKEN", "APP_SECRET", "REDIS_URL", "QUEUE_KEY"].forEach((key) => {
+  if (process.env[key] === undefined) {
+    console.error(`Environment variable ${key} is required`)
+    process.exit(1)
+  }
+})
+const TOKEN = process.env.TOKEN
+const PORT = process.env.PORT
+const APP_SECRET = process.env.APP_SECRET
+const REDIS_URL = process.env.REDIS_URL
+const QUEUE_KEY = process.env.QUEUE_KEY
+const LOG_LEVEL = process.env.LOG_LEVEL || "info"
+
+/**
  * Logging
  */
 const humanReadableFormat = format.printf(({ level, message, timestamp }) => {
   return `${timestamp} [${level.toUpperCase()}]: ${message}`
 })
 const winstonOptions = {
-  level: process.env.LOG_LEVEL || "info",
+  level: LOG_LEVEL.toLowerCase(),
   format: format.combine(
     format.timestamp(),
     format.json(),
@@ -22,21 +38,6 @@ const winstonOptions = {
   transports: [new transports.Console()],
 }
 const logger = createLogger(winstonOptions)
-
-/**
- * Required environment variables
- */
-;["PORT", "TOKEN", "APP_SECRET", "REDIS_URL"].forEach((key) => {
-  if (process.env[key] === undefined) {
-    logger.error(`Environment variable ${key} is required`)
-    process.exit(1)
-  }
-})
-const TOKEN = process.env.TOKEN
-const PORT = process.env.PORT
-const APP_SECRET = process.env.APP_SECRET
-const REDIS_URL = process.env.REDIS_URL
-const QUEUE_KEY = "ihatevoicenotes:queue"
 
 /**
  * Redis
