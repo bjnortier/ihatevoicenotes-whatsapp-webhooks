@@ -5,7 +5,6 @@ import bodyParser from "body-parser"
 import "crypto"
 import { createClient } from "redis"
 import { middleware as webhookMiddleware } from "x-hub-signature"
-import createError from "http-errors"
 
 /**
  * Required environment variables
