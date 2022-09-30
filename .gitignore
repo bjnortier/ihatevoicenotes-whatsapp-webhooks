@@ -5,6 +5,7 @@ dist/
 
 # Local development
 .dev-env
+.prod-env
 .DS_Store
 
 # Docker
