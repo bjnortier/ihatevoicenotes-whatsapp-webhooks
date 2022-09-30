@@ -1,10 +1,11 @@
 import express, { Express } from "express"
 import { transports, format, createLogger } from "winston"
 import { inspect } from "util"
-import xhub from "express-x-hub"
 import bodyParser from "body-parser"
 import "crypto"
 import { createClient } from "redis"
+import { middleware as webhookMiddleware } from "x-hub-signature"
+import createError from "http-errors"
 
 /**
  * Required environment variables
@@ -51,14 +52,22 @@ const client = createClient({
  */
 const app: Express = express()
 
-app.use(xhub({ algorithm: "sha1", secret: APP_SECRET }))
-app.use(bodyParser.json())
+app.use(
+  bodyParser.json({
+    verify: webhookMiddleware.extractRawBody,
+  })
+)
+const verifyXHub = webhookMiddleware({
+  algorithm: "sha1",
+  secret: APP_SECRET,
+  require: true,
+})
 
 /**
  * Routes
  */
 
-app.get("/", function (req, res) {
+app.get("/", function (req, res, next) {
   res.json("[]")
 })
 
@@ -73,40 +82,27 @@ app.get("/whatsapp", function (req, res) {
   }
 })
 
-app.post("/whatsapp", function (req, res) {
+app.post("/whatsapp", verifyXHub, function (req, res) {
   logger.debug("WhatsApp request body:")
   logger.debug(inspect(req.body, false, null, true))
-
-  // @ts-ignore
-  if (!req.isXHubValid()) {
-    logger.warn(
-      "Warning - request header X-Hub-Signature not present or invalid"
-    )
-    res.sendStatus(401)
-    return
-  }
-
-  logger.info("valid webhook reqceived... queueing")
   client.rPush(QUEUE_KEY, [JSON.stringify(req.body)])
-
-  logger.debug("request header X-Hub-Signature validated")
+  logger.info("queued.")
   res.sendStatus(200)
 })
 
-// The ERROR logger catches any errors in the routes.
+// Log any errors
 app.use((err, req, res, next) => {
   logger.error(`${req.method} ${req.url} ${err.stack}`)
-  next()
+  next(err)
 })
 
 /**
  * Start
  */
 const main = async () => {
-  client.on("error", (err) => logger.error(`Redis Client Error: ${err}`))
+  client.on("error", (err) => logger.error(`redis Client Error: ${err}`))
   client.connect()
-
-  logger.info("Redis client connected")
+  logger.info("redis client connected")
   app.listen(PORT, () => {
     logger.info(`server listening on port: ${PORT}`)
   })
