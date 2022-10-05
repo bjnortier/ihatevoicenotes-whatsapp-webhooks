@@ -54,11 +54,20 @@ app.use((req, res, next) => {
   logger.info(`${req.method} ${req.url}`)
   next()
 })
+app.use(
+  bodyParser.json({
+    verify: webhookMiddleware.extractRawBody,
+  })
+)
 const verifyXHub = webhookMiddleware({
   algorithm: "sha1",
   secret: APP_SECRET,
   require: true,
 })
+
+/**
+ * Routes
+ */
 
 app.get("/", function (req, res, next) {
   res.json("[]")
