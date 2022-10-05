@@ -1,15 +1,13 @@
 {
-  "name": "ihatevoicenotes",
-  "version": "0.1.0",
-  "description": "I hate Voicenotes",
-  "main": "index.js",
+  "name": "ihatevoicenotes-whatsapp-webhooks",
+  "version": "1.0.0",
+  "description": "IHateVoicenotes WhatsApp Webhooks",
   "type": "module",
   "scripts": {
-    "build": "npx rimraf dist/ && npx tsc",
-    "start": "node dist/src/index.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
     "check": "tsc --noEmit",
-    "foo": "tsc --version"
+    "build": "npx rimraf dist/ && npx tsc",
+    "start": "node dist/src/index.js"
   },
   "dependencies": {
     "body-parser": "^1.20.0",

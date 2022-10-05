@@ -50,7 +50,6 @@ const client = createClient({
  * App & routes
  */
 const app: Express = express()
-
 app.use(
   bodyParser.json({
     verify: webhookMiddleware.extractRawBody,
