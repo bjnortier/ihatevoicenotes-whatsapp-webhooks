@@ -84,11 +84,11 @@ app.get("/whatsapp", function (req, res) {
   }
 })
 
-app.post("/whatsapp", verifyXHub, function (req, res) {
+app.post("/whatsapp", verifyXHub, async (req, res) => {
   logger.debug("WhatsApp request body:")
   logger.debug(inspect(req.body, false, null, true))
-  client.rPush(QUEUE_KEY, [JSON.stringify(req.body)])
-  const size = client.lLen(QUEUE_KEY)
+  await client.rPush(QUEUE_KEY, [JSON.stringify(req.body)])
+  const size = await client.lLen(QUEUE_KEY)
   logger.info(`queued. queue size: ${size}`)
   res.sendStatus(200)
 })
